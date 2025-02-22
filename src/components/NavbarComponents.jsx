@@ -9,22 +9,23 @@ const NavbarComponents = () => {
       style={{ width: "30px" }}
     />
   );
+
   return (
-    <Navbar className="bg-body-tertiary">
+    <Navbar bg="body-tertiary" expand="lg">
       <Container fluid>
         <Navbar.Brand href="#home">POS APP</Navbar.Brand>
-        <Navbar.Toggle />
-        <Navbar.Collapse className="justify-content-end">
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-nav" className="justify-content-end">
           <Nav>
             <NavDropdown
               title={
                 <>
-                  {avatar} {"Pojok Code"}
+                  {avatar} Pojok Code
                 </>
               }
               id="collapsible-nav-dropdown"
             >
-              <NavDropdown.Item href="#">Profil</NavDropdown.Item>
+              <NavDropdown.Item href="#">Profile</NavDropdown.Item>
               <NavDropdown.Item href="/logout">Logout</NavDropdown.Item>
             </NavDropdown>
           </Nav>
