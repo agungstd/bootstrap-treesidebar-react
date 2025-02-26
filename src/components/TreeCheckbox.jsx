@@ -6,19 +6,11 @@ const TreeCheckbox = () => {
   const [checked, setChecked] = useState(["node1.2", "node2.2.2"]);
   const [expanded, setExpanded] = useState(["node1", "node2", "node2.2"]);
 
-  const handleCheck = (checked) => {
-    setChecked(checked);
-  };
-
-  const handleExpand = (expanded) => {
-    setExpanded(expanded);
-  };
+  const handleCheck = (checked) => setChecked(checked);
+  const handleExpand = (expanded) => setExpanded(expanded);
 
   const submit = () => {
-    const array = [...checked, ...expanded];
-    const uniqueArray = array.filter((item, index) => {
-      return array.indexOf(item) === index;
-    });
+    const uniqueArray = [...new Set([...checked, ...expanded])];
     console.log(uniqueArray);
   };
 
@@ -35,44 +27,18 @@ const TreeCheckbox = () => {
   ];
 
   const buildHierarchy = (data) => {
-    const map = new Map();
-
-    // Create a map of nodes using their IDs as keys
+    const map = new Map(data.map((node) => [node.id, { ...node, children: [] }]));
     data.forEach((node) => {
-      map.set(node.id, { ...node, children: [] });
+      if (node.parentId) map.get(node.parentId).children.push(map.get(node.id));
     });
-
-    // Build the hierarchy by assigning children to their parent nodes
-    data.forEach((node) => {
-      if (node.parentId) {
-        const parent = map.get(node.parentId);
-        parent.children.push(map.get(node.id));
-      }
-    });
-
-    // Find the root nodes (nodes without a parent) to start the hierarchy
-    const rootNodes = [];
-    data.forEach((node) => {
-      if (!node.parentId) {
-        rootNodes.push(map.get(node.id));
-      }
-    });
-
-    return rootNodes;
+    return data.filter((node) => !node.parentId).map((node) => map.get(node.id));
   };
 
-  const removeEmptyChildren = (data) => {
-    return data.filter((node) => {
-      if (node.children.length === 0) {
-        delete node.children;
-        return node;
-      }
-      node.children = removeEmptyChildren(node.children);
-      return node;
-    });
-  };
+  const treeData = buildHierarchy(data).map((node) => {
+    if (node.children.length === 0) delete node.children;
+    return node;
+  });
 
-  const treeData = removeEmptyChildren(buildHierarchy(data));
   return (
     <>
       <CheckboxTree
@@ -86,7 +52,7 @@ const TreeCheckbox = () => {
       <button
         className="btn btn-primary mt-3"
         type="button"
-        onClick={() => submit(data)}
+        onClick={submit}
       >
         Submit
       </button>
