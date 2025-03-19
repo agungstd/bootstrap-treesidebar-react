@@ -1,26 +1,26 @@
 import PropTypes from "prop-types";
+import { useState, useEffect } from "react";
 
 const SidebarItem = ({ item }) => {
-  const action = () => {
-    const itemBar = document.getElementById("sideitem" + item.id);
-    if (itemBar) {
-      itemBar.classList.toggle("open");
-    }
+  const [isOpen, setIsOpen] = useState(item.isOpen === 1);
+
+  useEffect(() => {
+    setIsOpen(item.isOpen === 1);
+  }, [item.isOpen]);
+
+  const toggleOpen = () => {
+    setIsOpen(!isOpen);
   };
+
   if (item.childrens) {
     return (
-      <div
-        id={"sideitem" + item.id}
-        className={
-          item.isOpen && item.isOpen == 1 ? "sidebar-item open" : "sidebar-item"
-        }
-      >
-        <div className="sidebar-title" onClick={() => action()}>
+      <div className={`sidebar-item ${isOpen ? "open" : ""}`}>
+        <div className="sidebar-title" onClick={toggleOpen}>
           <span>
             {item.icon && <i className={item.icon}></i>}
-            {item.title}
+            <span className="ms-2">{item.title}</span>
           </span>
-          <i className="bi-chevron-left toggle-btn icon-item"></i>
+          <i className={`bi-chevron-${isOpen ? "down" : "left"} toggle-btn icon-item`}></i>
         </div>
         <div className="sidebar-content">
           {item.childrens.map((child, index) => (
@@ -33,7 +33,7 @@ const SidebarItem = ({ item }) => {
     return (
       <a href={item.path || "#"} className="sidebar-item plain">
         {item.icon && <i className={item.icon}></i>}
-        {item.title}
+        <span className="ms-2">{item.title}</span>
       </a>
     );
   }
