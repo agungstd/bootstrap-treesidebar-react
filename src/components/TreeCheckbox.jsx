@@ -5,15 +5,24 @@ import "react-checkbox-tree/lib/react-checkbox-tree.css";
 const TreeCheckbox = () => {
   const [checked, setChecked] = useState(["node1.2", "node2.2.2"]);
   const [expanded, setExpanded] = useState(["node1", "node2", "node2.2"]);
+  const [error, setError] = useState(null);
 
   const handleCheck = (checked) => setChecked(checked);
   const handleExpand = (expanded) => setExpanded(expanded);
 
   const submit = () => {
-    const uniqueArray = [...new Set([...checked, ...expanded])];
-    console.log(uniqueArray);
+    try {
+      const uniqueArray = [...new Set([...checked, ...expanded])];
+      console.log(uniqueArray);
+      // You could add API call here
+      setError(null);
+    } catch (err) {
+      setError("Failed to submit data. Please try again.");
+      console.error(err);
+    }
   };
 
+  // Sample data
   const data = [
     { id: 1, value: "node1", label: "Node 1", parentId: null },
     { id: 2, value: "node1.1", label: "Node 1.1", parentId: 1 },
@@ -40,23 +49,44 @@ const TreeCheckbox = () => {
   });
 
   return (
-    <>
+    <div className="tree-checkbox-container p-3">
+      <h4 className="mb-3">Select Nodes</h4>
+      
       <CheckboxTree
-        showCheckbox={false}
+        showCheckbox={true}
         nodes={treeData}
         checked={checked}
         expanded={expanded}
         onCheck={handleCheck}
         onExpand={handleExpand}
+        icons={{
+          check: <i className="bi bi-check-square"></i>,
+          uncheck: <i className="bi bi-square"></i>,
+          halfCheck: <i className="bi bi-dash-square"></i>,
+          expandClose: <i className="bi bi-chevron-right"></i>,
+          expandOpen: <i className="bi bi-chevron-down"></i>,
+        }}
       />
-      <button
-        className="btn btn-primary mt-3"
-        type="button"
-        onClick={submit}
-      >
-        Submit
-      </button>
-    </>
+      
+      {error && <div className="alert alert-danger mt-3">{error}</div>}
+      
+      <div className="mt-3">
+        <button
+          className="btn btn-primary"
+          type="button"
+          onClick={submit}
+        >
+          Submit
+        </button>
+        <button
+          className="btn btn-outline-secondary ms-2"
+          type="button"
+          onClick={() => setChecked([])}
+        >
+          Clear Selection
+        </button>
+      </div>
+    </div>
   );
 };
 
